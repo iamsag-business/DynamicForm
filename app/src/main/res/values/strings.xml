@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DynamicForm</string>
+    <string name="fetching_form">Fetching form...</string>
+    <string name="retry">Retry</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="continue_">Continue</string>
+    <string name="no_form_fields_available">No form fields available.</string>
+    <string name="form_validated">Form validated</string>
+</resources>
