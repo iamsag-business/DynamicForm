@@ -2,6 +2,7 @@ package com.example.dynamicform.data.repository
 
 import com.example.dynamicform.data.api.ApiClient
 import com.example.dynamicform.data.model.FormDataResponse
+import retrofit2.HttpException
 
 class FormRepository {
 
@@ -26,9 +27,7 @@ class FormRepository {
                 }
 
             } else {
-                Result.failure(
-                    Exception("Something went wrong: ${response.code()}")
-                )
+                Result.failure(HttpException(response))
             }
 
         } catch (e: Exception) {

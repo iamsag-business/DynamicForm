@@ -11,6 +11,11 @@ import com.example.dynamicform.data.model.FormDataResponse
 import com.example.dynamicform.data.model.FormField
 import com.example.dynamicform.data.repository.FormRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 sealed class FormUiState {
 
@@ -45,11 +50,46 @@ class FormViewModel(
                     _uiState.value = FormUiState.Success(response)
                 },
                 onFailure = { error ->
-                    _uiState.value = FormUiState.Error(
-                        error.message ?: "Something went wrong"
-                    )
+                    val message = getUserFriendlyMessage(error)
+
+                    error.printStackTrace()
+
+                    _uiState.value = FormUiState.Error(message)
                 }
             )
+        }
+    }
+
+    private fun getUserFriendlyMessage(error: Throwable): String {
+
+        return when (error) {
+
+            is HttpException -> {
+                when (error.code()) {
+                    400 -> "Invalid request. Please try again."
+                    401, 403 -> "You are not authorized to access this form."
+                    404 -> "The requested form could not be found."
+                    408 -> "The request took too long. Please try again."
+                    429 -> "The form service has reached its request limit. Please try again later."
+                    in 500..599 -> "Our server is having trouble right now. Please try again later."
+                    else -> "Unable to load the form. Please try again."
+                }
+            }
+
+            is UnknownHostException ->
+                "No internet connection. Please check your connection and try again."
+
+            is SocketTimeoutException ->
+                "The connection timed out. Please try again."
+
+            is ConnectException ->
+                "Unable to connect to the server. Please try again."
+
+            is IOException ->
+                "A network error occurred. Please check your connection and try again."
+
+            else ->
+                "Something went wrong while loading the form. Please try again."
         }
     }
 
